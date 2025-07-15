@@ -1,0 +1,24 @@
+{
+    "name": "d3d12learn",
+    "version-string": "0.1.0",
+    "dependencies": [
+        {
+            "name": "imgui"
+        },
+        {
+            "name": "spdlog"
+
+        },
+        {
+            "name": "glfw3"
+        },
+        {
+            "name": "glad"
+        },
+        {
+            "name": "glm"
+        }
+
+    ]
+
+}

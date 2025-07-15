@@ -1,0 +1,7 @@
+CompileFlags: # Tweak the parse settings
+    Add: [
+        -xc++,
+        -std=c++20,
+        ]
+
+
