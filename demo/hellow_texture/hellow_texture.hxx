@@ -1,19 +1,19 @@
 #pragma once
-#ifndef HELLO_TRIANGLE_HXX
-#define HELLO_TRIANGLE_HXX
+#ifndef HELLO_TEXTURE_HXX
+#define HELLO_TEXTURE_HXX
 
-#include "app.hxx"
-
+#include <wrl.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <d3dcompiler.h>
-#include <wrl.h>
+#include <d3dx12_core.h>  
 #include <DirectXMath.h>
-#include <d3dx12_core.h>
-#include <Windows.h>
-
 #include <string>
 
+#include "src/app.hxx"
+
+#define  __CBV__  1
+
+using DirectX::XMFLOAT2;
 using DirectX::XMFLOAT3;
 using DirectX::XMFLOAT4;
 using Microsoft::WRL::ComPtr;
@@ -30,11 +30,11 @@ public:
 	DWORD m_error;
 };
 
-class CD3D12Triangle final: public Application
+class CD3D12Texture final: public Application
 {
 public:
-	CD3D12Triangle(const std::string& title);
-	~CD3D12Triangle();
+	CD3D12Texture(const std::string& title);
+	~CD3D12Texture();
 
 	 void OnInit(HWND h);
 	 void OnRender(void);
@@ -43,9 +43,8 @@ public:
 	 struct Vertex
 	 {
 		 XMFLOAT3 position;
-		 XMFLOAT4 color;
+		 XMFLOAT2 uv;
 	 };
-
 protected:
 	void onInit(GLFWwindow* ) override;
     bool onLoad() override;
@@ -65,6 +64,12 @@ private:
 	void CreateGPUPipelineState(ComPtr<ID3D12PipelineState>& pipelineState, ComPtr<ID3D12CommandAllocator>& commandAllocator, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitializeVertexBuffer(ComPtr<ID3D12Resource>& vertexBuffer,D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
 	
+	void SetCreateTexture2D();
+	void CreateDefaultHeapTexture(ComPtr<ID3D12Resource>& texture, DXGI_FORMAT dxFormat ,UINT w, UINT h);
+	void CreateUploadHeapTexture(ComPtr<ID3D12Resource>& texture,UINT w, UINT h);
+	void CreateShaderResource(DXGI_FORMAT dxFormat);
+	void CopyImageDataCommitted(int w, int h, int bpp, BYTE* pImageData);
+
 	void CreateCpuAndGpuSynchronization();
 	void WaitForPreviousFrame(void);
 
@@ -122,13 +127,16 @@ private:
 
 	UINT m_rtvDescriptorSize;
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+	ComPtr<ID3D12DescriptorHeap> m_srvHeap;
 	ComPtr<ID3D12Resource> m_renderTargets[m_nFrameCount];
 
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
-
+	
+	ComPtr<ID3D12Resource> m_texture;
+	ComPtr<ID3D12Resource> m_textureUploadHeap;
 	
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
@@ -138,12 +146,25 @@ private:
 	ComPtr<ID3D12Fence> m_fence;
 	UINT64 m_fenceValue;
 
-
-
 	std::wstring m_CurrentPath;
+
+	int m_nSRVDescriptorSize;
+
+#if __CBV__
+
+	struct SceneConstantBuffer
+	{
+		XMFLOAT4 offset;
+		float padding[60];
+	};
+
+	ComPtr<ID3D12Resource> m_constantBuffer;
+	SceneConstantBuffer m_constantBufferData;
+	UINT8* m_pCbvDataBegin;
+	void CreateConstantBuffer(ComPtr<ID3D12DescriptorHeap>& srvHeap,ComPtr<ID3D12Resource>& cbvResource);
+	void UpdateConstantBufferData();
+#endif
+
 };
 
-
-
-
-#endif // HELLO_TRIANGLE_HXX
+#endif // HELLO_TEXTURE_HXX

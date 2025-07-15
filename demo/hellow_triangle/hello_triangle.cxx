@@ -1,5 +1,5 @@
 
-// #include "framework.h"
+
 #include "hello_triangle.hxx"
 
 #include <d3dx12_core.h>

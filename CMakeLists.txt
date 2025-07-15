@@ -24,10 +24,15 @@ find_package(imgui CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     main.cxx
-    src/app.cxx
-    src/hello_triangle.cxx
-    src/hello_triangle.hxx
     src/app.hxx
+    src/app.cxx
+    # demo/hellow_triangle/hello_triangle.cxx
+    # demo/hellow_triangle/hello_triangle.hxx
+    demo/hellow_texture/hellow_texture.hxx
+    demo/hellow_texture/hellow_texture.cxx
+    demo/hellow_texture/texture_helper.hxx
+    demo/hellow_texture/texture_helper.cxx
+
 )
 
 
@@ -48,6 +53,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
     src 
     dx_include/directx
     dx_include/dxguids
